@@ -79,6 +79,15 @@ final class KeyboardLock {
             + [51, 117, 36, 76, 48]
     )
 
+    /// The power button / Touch ID key (sleep, lock screen): a system-defined event, either the
+    /// power-key subtype or the power key among the auxiliary (media) keys.
+    nonisolated private static func isPowerButton(type: CGEventType, event: CGEvent) -> Bool {
+        guard type.rawValue == 14, let system = NSEvent(cgEvent: event) else { return false } // NX_SYSDEFINED
+        if system.subtype.rawValue == 1 { return true }             // NX_SUBTYPE_POWER_KEY
+        guard system.subtype.rawValue == 8 else { return false }    // NX_SUBTYPE_AUX_CONTROL_BUTTONS
+        return (system.data1 & 0xFFFF_0000) >> 16 == 6              // NX_POWER_KEY
+    }
+
     nonisolated private static let callback: CGEventTapCallBack = { _, type, event, _ in
         let state = KeyboardLock.state
         switch type {
@@ -97,7 +106,10 @@ final class KeyboardLock {
             let flags = event.flags.intersection([.maskCommand, .maskControl, .maskAlternate, .maskSecondaryFn])
             let key = event.getIntegerValueField(.keyboardEventKeycode)
             if flags.isEmpty && allowedKeys.contains(key) { return Unmanaged.passUnretained(event) }
+            // Ctrl-Cmd-Q, Lock Screen: locking isn't a way out, the cover is back after login.
+            if flags == [.maskCommand, .maskControl] && key == 12 { return Unmanaged.passUnretained(event) }
         }
+        if isPowerButton(type: type, event: event) { return Unmanaged.passUnretained(event) }
         // Everything else: shortcuts, function and media keys (system-defined events),
         // trackpad gestures (Mission Control, App Exposé), and so on.
         return nil
