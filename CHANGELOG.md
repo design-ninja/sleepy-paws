@@ -6,6 +6,13 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-07
+
+### Fixed
+
+- The update window shows what's new in the version instead of the GitHub
+  repository page.
+
 ## [0.2.0] - 2026-11-07
 
 ### Added
@@ -64,7 +71,8 @@ First public build.
 - About window with a link to the repository.
 - Signed with Developer ID and notarized by Apple.
 
-[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/design-ninja/sleepy-paws/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/design-ninja/sleepy-paws/releases/tag/v0.1.0

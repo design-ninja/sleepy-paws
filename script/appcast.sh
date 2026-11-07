@@ -17,6 +17,8 @@ minimum="$(/usr/bin/plutil -extract LSMinimumSystemVersion raw "$info")"
 signature="$("$tools/sign_update" --account sleepy-paws "$zip")" # sparkle:edSignature="…" length="…"
 name="$(basename "$zip")"
 date="$(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S +0000')"
+# The update window shows these notes (this version's CHANGELOG section) instead of a web page.
+notes="$(python3 -I script/release_notes.py "$version")"
 
 cat > dist/appcast.xml <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -30,7 +32,8 @@ cat > dist/appcast.xml <<XML
       <sparkle:version>$build</sparkle:version>
       <sparkle:shortVersionString>$version</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>$minimum</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/$repo/releases/tag/v$version</sparkle:releaseNotesLink>
+      <description><![CDATA[$notes]]></description>
+      <sparkle:fullReleaseNotesLink>https://github.com/$repo/blob/main/CHANGELOG.md</sparkle:fullReleaseNotesLink>
       <enclosure url="https://github.com/$repo/releases/download/v$version/$name" type="application/octet-stream" $signature />
     </item>
   </channel>
