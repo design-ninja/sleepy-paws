@@ -7,20 +7,19 @@ import OSLog
 ///
 /// Only regular (Dock) apps are frozen, together with their child processes and the XPC
 /// services they are responsible for (a browser's video, for example, plays in a helper).
-/// System processes, this app and SecurityAgent (needed for "Forgot PIN?") are never touched.
+/// System UI, accessibility, this app and SecurityAgent (needed for "Forgot PIN?") are never
+/// touched.
 /// Frozen PIDs are saved, and every launch thaws them, so a crash can't leave apps stuck.
 @MainActor
 final class AppFreezer {
     private static let defaultsKey = "AppFreezer.pids"
     private static let log = Logger(subsystem: "pro.lirik.sleepypaws", category: "freeze")
 
-    /// Apps that keep running: system UI, accessibility, and Claude (so development sessions on
-    /// the same Mac aren't frozen; a child's account doesn't run it).
+    /// Apps that keep running: system UI and accessibility.
     private static let spared: Set<String> = [
         "com.apple.finder", "com.apple.dock", "com.apple.systemuiserver", "com.apple.controlcenter",
         "com.apple.notificationcenterui", "com.apple.loginwindow", "com.apple.SecurityAgent",
         "com.apple.VoiceOver", "com.apple.accessibility.AccessibilityVisualsAgent",
-        "com.anthropic.claudefordesktop",
     ]
 
     private let defaults: UserDefaults

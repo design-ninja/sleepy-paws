@@ -79,13 +79,26 @@ final class KeyboardLock {
             + [51, 117, 36, 76, 48]
     )
 
-    /// The power button / Touch ID key (sleep, lock screen): a system-defined event, either the
-    /// power-key subtype or the power key among the auxiliary (media) keys.
-    nonisolated private static func isPowerButton(type: CGEventType, event: CGEvent) -> Bool {
+    /// Brightness keys sent as ordinary keys (F14/F15 on external Apple keyboards, and the
+    /// built-in brightness key codes).
+    nonisolated private static let brightnessKeys: Set<Int64> = [107, 113, 144, 145]
+
+    /// Accessibility shortcuts: Cmd-F5 (VoiceOver), Option-Cmd-F5 (Accessibility Shortcuts) and
+    /// Option-Cmd-8 / = / - (Zoom). The Fn flag is ignored: F-row keys often carry it.
+    nonisolated private static func isAccessibilityShortcut(key: Int64, modifiers: CGEventFlags) -> Bool {
+        if key == 96 { return modifiers == [.maskCommand] || modifiers == [.maskCommand, .maskAlternate] }
+        return modifiers == [.maskCommand, .maskAlternate] && [28, 24, 27].contains(key)
+    }
+
+    /// System-defined keys that stay usable: the power button / Touch ID key (sleep, lock
+    /// screen), screen brightness and keyboard backlight. They arrive either as the power-key
+    /// subtype or as auxiliary (media) keys.
+    nonisolated private static func isAllowedSystemKey(type: CGEventType, event: CGEvent) -> Bool {
         guard type.rawValue == 14, let system = NSEvent(cgEvent: event) else { return false } // NX_SYSDEFINED
         if system.subtype.rawValue == 1 { return true }             // NX_SUBTYPE_POWER_KEY
         guard system.subtype.rawValue == 8 else { return false }    // NX_SUBTYPE_AUX_CONTROL_BUTTONS
-        return (system.data1 & 0xFFFF_0000) >> 16 == 6              // NX_POWER_KEY
+        // NX_POWER_KEY 6, NX_KEYTYPE_BRIGHTNESS_UP/DOWN 2/3, NX_KEYTYPE_ILLUMINATION_UP/DOWN/TOGGLE 21/22/23
+        return [6, 2, 3, 21, 22, 23].contains((system.data1 & 0xFFFF_0000) >> 16)
     }
 
     nonisolated private static let callback: CGEventTapCallBack = { _, type, event, _ in
@@ -108,8 +121,11 @@ final class KeyboardLock {
             if flags.isEmpty && allowedKeys.contains(key) { return Unmanaged.passUnretained(event) }
             // Ctrl-Cmd-Q, Lock Screen: locking isn't a way out, the cover is back after login.
             if flags == [.maskCommand, .maskControl] && key == 12 { return Unmanaged.passUnretained(event) }
+            let modifiers = flags.subtracting(.maskSecondaryFn)
+            if modifiers.isEmpty && brightnessKeys.contains(key) { return Unmanaged.passUnretained(event) }
+            if isAccessibilityShortcut(key: key, modifiers: modifiers) { return Unmanaged.passUnretained(event) }
         }
-        if isPowerButton(type: type, event: event) { return Unmanaged.passUnretained(event) }
+        if isAllowedSystemKey(type: type, event: event) { return Unmanaged.passUnretained(event) }
         // Everything else: shortcuts, function and media keys (system-defined events),
         // trackpad gestures (Mission Control, App Exposé), and so on.
         return nil

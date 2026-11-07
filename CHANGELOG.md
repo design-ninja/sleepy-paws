@@ -11,7 +11,9 @@ All notable changes to Sleepy Paws are listed here. The format follows
 - Block shortcuts: with the Accessibility permission (Settings → Block
   shortcuts → Allow…), the break screen swallows every key except the PIN
   digits, Delete, Return and Tab, so Cmd-Tab, Spotlight, Mission Control,
-  function and media keys do nothing.
+  function and media keys do nothing. The power button, Ctrl-Cmd-Q (Lock
+  Screen), screen brightness, keyboard backlight and accessibility shortcuts
+  (VoiceOver, Accessibility Shortcuts, Zoom) still work.
 
 ### Changed
 
