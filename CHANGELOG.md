@@ -6,11 +6,13 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-07
+
 ### Added
 
 - Automatic updates with Sparkle: a daily check and Check for Updates… in the
   menu. Updates are signed with an EdDSA key and served from GitHub Releases.
-- About shows the build number too, e.g. 0.1.0 (1).
+- About shows the build number too, e.g. 0.1.1 (2).
 
 ## [0.1.0] - 2026-11-07
 
@@ -41,5 +43,6 @@ First public build.
 - About window with a link to the repository.
 - Signed with Developer ID and notarized by Apple.
 
-[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/design-ninja/sleepy-paws/releases/tag/v0.1.0
