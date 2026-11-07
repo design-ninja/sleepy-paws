@@ -34,19 +34,32 @@ if [[ $mode != --package ]]; then
     /bin/launchctl bootout "gui/$UID/pro.lirik.sleepypaws.agent" 2>/dev/null || true
     /usr/bin/pkill -u "$UID" -x SleepyPaws 2>/dev/null || true
 fi
-mkdir -p "$bundle/Contents/"{MacOS,Resources}
+mkdir -p "$bundle/Contents/"{MacOS,Resources,Frameworks}
 install -m 755 "$bin" "$bundle/Contents/MacOS/SleepyPaws"
 cp Resources/Info.plist "$bundle/Contents/Info.plist"
 cp Resources/{AppIcon.png,TimeIsUp.wav} "$tmp/AppIcon.icns" "$bundle/Contents/Resources/"
+# Sparkle, for updates. ditto keeps the framework's symlinks.
+rm -rf "$bundle/Contents/Frameworks/Sparkle.framework"
+/usr/bin/ditto "$(dirname "$bin")/Sparkle.framework" "$bundle/Contents/Frameworks/Sparkle.framework"
+
 if [[ $mode == --package && -n ${SLEEPYPAWS_SIGNING_IDENTITY:-} ]]; then
-    /usr/bin/codesign --force --options runtime --timestamp --entitlements Resources/SleepyPaws.entitlements --sign "$SLEEPYPAWS_SIGNING_IDENTITY" "$bundle"
+    identity="$SLEEPYPAWS_SIGNING_IDENTITY"
+    sign=(/usr/bin/codesign --force --options runtime --timestamp --sign "$identity")
 else
     # Sign development builds with a stable identity when there is one (ad hoc otherwise), so
     # macOS permissions such as Automation survive rebuilds.
     identity="${SLEEPYPAWS_DEV_IDENTITY:-$(/usr/bin/security find-identity -v -p codesigning 2>/dev/null \
         | /usr/bin/sed -n 's/.*"\(Apple Development: [^"]*\)".*/\1/p' | /usr/bin/head -1)}"
-    /usr/bin/codesign --force --entitlements Resources/SleepyPaws.entitlements --sign "${identity:--}" "$bundle"
+    sign=(/usr/bin/codesign --force --options runtime --sign "${identity:--}")
 fi
+# Inside out: Sparkle's helpers, the framework, then the app (Sparkle's documented order).
+sparkle="$bundle/Contents/Frameworks/Sparkle.framework/Versions/B"
+"${sign[@]}" "$sparkle/XPCServices/Installer.xpc"
+"${sign[@]}" --preserve-metadata=entitlements "$sparkle/XPCServices/Downloader.xpc"
+"${sign[@]}" "$sparkle/Autoupdate"
+"${sign[@]}" "$sparkle/Updater.app"
+"${sign[@]}" "$bundle/Contents/Frameworks/Sparkle.framework"
+"${sign[@]}" --entitlements Resources/SleepyPaws.entitlements "$bundle"
 /usr/bin/codesign --verify --strict "$bundle"
 
 case "$mode" in

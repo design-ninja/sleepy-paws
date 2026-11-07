@@ -41,6 +41,7 @@ grown-up says otherwise. No lectures, just a yawning puppy.
 - 🧑‍💻 **Forgives forgetful parents.** *Forgot PIN?* asks macOS for an
   administrator's name and password instead. Kids on a standard account don't
   have them.
+- 🔄 **Keeps itself up to date** with Sparkle, from GitHub Releases.
 - 🛡️ **Is hard to wriggle out of.** It starts at login and comes back within
   seconds if it is killed. Progress is saved every few seconds and at shutdown,
   so a restart picks up where it left off. Its state is kept in two copies and
@@ -79,8 +80,25 @@ swift test                               # timer, PIN and pause logic
 ```
 
 `--package` signs with `SLEEPYPAWS_SIGNING_IDENTITY` (a Developer ID
-Application identity) when it's set; `notarize.sh` also needs
-`SLEEPYPAWS_NOTARY_PROFILE`, a saved `notarytool` keychain profile.
+Application identity) when it's set. `notarize.sh` also needs notary
+credentials: `SLEEPYPAWS_NOTARY_PROFILE` (a saved `notarytool` profile) or an
+App Store Connect API key in `APP_STORE_KEY_ID`, `APP_STORE_ISSUER_ID` and
+`APP_STORE_KEY_PATH`.
+
+### Releasing
+
+Updates reach people through [Sparkle](https://sparkle-project.org): the app
+checks `releases/latest/download/appcast.xml` once a day. To ship a version,
+bump `CFBundleShortVersionString` and `CFBundleVersion` in
+`Resources/Info.plist`, add its section to `CHANGELOG.md`, commit, and run:
+
+```bash
+./script/release.sh
+```
+
+It notarizes the app, signs the ZIP with the Sparkle EdDSA key from your
+keychain (`generate_keys --account sleepy-paws` creates it), writes the
+appcast, tags the version and publishes a GitHub release with both files.
 
 ## How it stays on
 
@@ -110,7 +128,7 @@ exist, or a daily allowance where Time Allowances do.
 
 ## Under the hood
 
-- SwiftUI and AppKit, Swift Package Manager, no third-party dependencies.
+- SwiftUI and AppKit, Swift Package Manager; the only dependency is Sparkle.
 - `SleepyPawsCore` holds the logic with tests: the daily budget, pauses, PIN
   hashing and attempts, durations.
 - Pausing the Now Playing app uses the private MediaRemote framework, loaded at

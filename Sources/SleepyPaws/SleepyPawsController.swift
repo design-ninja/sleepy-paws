@@ -26,6 +26,7 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
     private var displayAwake = true
     private let macUsage = MacUsageState()
     private let audioGuard = AudioGuard(defaults: BackgroundAgent.defaults)
+    private let updates = Updates()
     private var usageClock = UsageClock()
     private var approvedQuit = false
     private var lastSave = ProcessInfo.processInfo.systemUptime
@@ -57,8 +58,14 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
         menu.addItem(settingsItem)
         menu.addItem(.separator())
         menu.addItem(withTitle: "About Sleepy Paws", action: #selector(showAbout), keyEquivalent: "")
+        let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(Updates.checkForUpdates(_:)), keyEquivalent: "")
+        updateItem.target = updates
+        menu.addItem(updateItem)
         menu.addItem(withTitle: "Quit", action: #selector(askToQuit), keyEquivalent: "")
-        menu.items.filter { $0.action != nil }.forEach { $0.target = self }
+        menu.items.filter { $0.action != nil && $0.target == nil }.forEach { $0.target = self }
+        // Installing an update quits and relaunches the app, which a PIN-less quit can't do.
+        updates.willRelaunch = { [weak self] in self?.approvedQuit = true }
+        updates.start()
         status.menu = menu
         status.button?.image = NSImage(systemSymbolName: "moon.zzz.fill", accessibilityDescription: nil)
         status.button?.imagePosition = .imageLeading

@@ -6,6 +6,12 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Automatic updates with Sparkle: a daily check and Check for Updates… in the
+  menu. Updates are signed with an EdDSA key and served from GitHub Releases.
+- About shows the build number too, e.g. 0.1.0 (1).
+
 ## [0.1.0] - 2026-11-07
 
 First public build.

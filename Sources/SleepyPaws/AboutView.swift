@@ -5,8 +5,12 @@ struct AboutView: View {
     private static let small = Font.system(size: 12)
     static let repository = URL(string: "https://github.com/design-ninja/sleepy-paws")!
 
+    /// Read from the app's Info.plist, e.g. "0.1.0 (1)".
     private var version: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1.0"
+        let info = Bundle.main.infoDictionary ?? [:]
+        let short = info["CFBundleShortVersionString"] as? String ?? "?"
+        guard let build = info["CFBundleVersion"] as? String, build != short else { return short }
+        return "\(short) (\(build))"
     }
 
     var body: some View {

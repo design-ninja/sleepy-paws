@@ -15,6 +15,10 @@
     <key>LSMinimumSystemVersion</key><string>12.0</string>
     <key>LSUIElement</key><true/>
     <key>NSAppleEventsUsageDescription</key><string>Sleepy Paws pauses music and video players when it’s time for a break.</string>
+    <key>SUFeedURL</key><string>https://github.com/design-ninja/sleepy-paws/releases/latest/download/appcast.xml</string>
+    <key>SUPublicEDKey</key><string>m9K6EGqTqPPn3lsh1H6u9JLUlkJzUH0eYY4fe62OAw8=</string>
+    <key>SUEnableAutomaticChecks</key><true/>
+    <key>SUScheduledCheckInterval</key><integer>86400</integer>
     <key>NSPrincipalClass</key><string>NSApplication</string>
 </dict>
 </plist>
