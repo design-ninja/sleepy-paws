@@ -27,6 +27,10 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
     private let macUsage = MacUsageState()
     private let audioGuard = AudioGuard(defaults: BackgroundAgent.defaults)
     private let updates = Updates()
+    private let freezer = AppFreezer(defaults: BackgroundAgent.defaults)
+    /// When the break screen came up, and when apps were last frozen behind it.
+    private var coverShownAt: TimeInterval?
+    private var lastFreeze: TimeInterval = 0
     private var usageClock = UsageClock()
     private var approvedQuit = false
     private var lastSave = ProcessInfo.processInfo.systemUptime
@@ -42,6 +46,7 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
         if state.pin != nil { _ = replace(with: state) }
 
         audioGuard.restore() // in case the app ended while the break screen had muted the Mac
+        freezer.thaw()       // …or had frozen other apps
         if let url = Bundle.main.url(forResource: "TimeIsUp", withExtension: "wav") {
             sound = NSSound(contentsOf: url, byReference: true)
         }
@@ -148,6 +153,7 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         timer?.invalidate()
         audioGuard.restore()
+        freezer.thaw()
         persist()
     }
 
@@ -168,11 +174,21 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
             if uptime - lastSave >= 5 { persist() }
             updateCover(desktopAvailable: desktopAvailable)
         }
-        // Keep the Mac silent behind the break screen, after the yawn has finished.
+        // Keep the Mac silent and still behind the break screen, after the yawn has finished.
         if cover.isShowing {
             if sound?.isPlaying != true { audioGuard.enforce() }
+            let shown = coverShownAt ?? uptime
+            coverShownAt = shown
+            // Give the media players a moment to take their pause command, then freeze the
+            // apps, and freeze apps opened later every few seconds.
+            if uptime - shown >= 2, uptime - lastFreeze >= 5 {
+                lastFreeze = uptime
+                freezer.freeze()
+            }
         } else {
+            coverShownAt = nil
             audioGuard.restore()
+            freezer.thaw()
         }
         updateStatus()
     }

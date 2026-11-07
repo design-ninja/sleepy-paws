@@ -6,6 +6,12 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Apps behind the break screen are frozen (SIGSTOP) and carry on where they
+  were when it ends; apps opened during the break are frozen too. Every launch
+  thaws anything left frozen by a crash.
+
 ## [0.1.1] - 2026-11-07
 
 ### Added

@@ -30,6 +30,9 @@ grown-up says otherwise. No lectures, just a yawning puppy.
 - 🐶 **Puts up a break screen.** Every display, every Space, over full-screen
   apps, with a little yawn. The Dock, the menu bar, the app switcher and Force
   Quit are off while it's up.
+- 🧊 **Freezes everything behind it.** Apps are paused mid-frame (like a
+  debugger's pause): no moving windows, no spinning animations, no game clock
+  ticking. They carry on exactly where they were when the break ends.
 - 🔇 **Stops the noise.** It pauses whatever owns Now Playing (YouTube in any
   browser, Music, Spotify…), pauses Music, Spotify, TV, QuickTime and VLC
   directly, and keeps the Mac muted until the break ends. Volume keys don't
@@ -110,6 +113,7 @@ appcast, tags the version and publishes a GitHub release with both files.
 | Deleting or editing its saved state | A second copy is kept; the stricter one wins. |
 | Cmd-Tab, Force Quit, the Dock | Disabled while the break screen is up. |
 | Turning the volume back up | Muted again within a quarter of a second. |
+| Leaving a game or video running underneath | Every app is frozen until the break ends, apps opened later too. |
 | Guessing the PIN | Five tries, then a 30-second wait. The PIN is stored as a salted PBKDF2 hash. |
 
 ### What it can't stop
@@ -133,6 +137,10 @@ exist, or a daily allowance where Time Allowances do.
   hashing and attempts, durations.
 - Pausing the Now Playing app uses the private MediaRemote framework, loaded at
   run time; if it isn't available, the mute still does the job.
+- Freezing sends `SIGSTOP` to regular apps, their child processes and the XPC
+  services they're responsible for, and `SIGCONT` afterwards. System UI,
+  SecurityAgent and Sleepy Paws itself are never frozen. Frozen PIDs are saved,
+  and every launch thaws them, so a crash can't leave apps stuck.
 - The yawn is synthesised by `script/make_sound.py`.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed.
