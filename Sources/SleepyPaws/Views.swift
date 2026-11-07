@@ -64,8 +64,11 @@ struct SetupView: View {
                     }
                     LabeledContent {
                         if shortcutsBlocked {
-                            Label("On", systemImage: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle.fill")
+                                Text("On")
+                            }
+                            .foregroundStyle(.green)
                         } else {
                             Button("Allow…") { KeyboardLock.requestPermission() }
                         }

@@ -6,8 +6,14 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-07
+
 ### Added
 
+- Apps behind the break screen are frozen (SIGSTOP) and carry on where they
+  were when it ends, so nothing moves, plays or counts down underneath; apps
+  opened during the break are frozen too. Every launch thaws anything left
+  frozen by a crash.
 - Block shortcuts: with the Accessibility permission (Settings → Block
   shortcuts → Allow…), the break screen swallows every key except the PIN
   digits, Delete, Return and Tab, so Cmd-Tab, Spotlight, Mission Control,
@@ -18,13 +24,8 @@ All notable changes to Sleepy Paws are listed here. The format follows
 ### Changed
 
 - The app becomes a regular app while the break screen is up, so macOS applies
-  its no-switching options; the overlay is a little more see-through.
-
-### Added (freezing)
-
-- Apps behind the break screen are frozen (SIGSTOP) and carry on where they
-  were when it ends; apps opened during the break are frozen too. Every launch
-  thaws anything left frozen by a crash.
+  its no-switching options.
+- The break screen overlay is a little more see-through.
 
 ## [0.1.1] - 2026-11-07
 
@@ -63,6 +64,7 @@ First public build.
 - About window with a link to the repository.
 - Signed with Developer ID and notarized by Apple.
 
-[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/design-ninja/sleepy-paws/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/design-ninja/sleepy-paws/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/design-ninja/sleepy-paws/releases/tag/v0.1.0
