@@ -57,10 +57,10 @@ final class SleepyPawsController: NSObject, NSApplicationDelegate {
         menu.addItem(pauseItem)
         menu.addItem(settingsItem)
         menu.addItem(.separator())
-        menu.addItem(withTitle: "About Sleepy Paws", action: #selector(showAbout), keyEquivalent: "")
         let updateItem = NSMenuItem(title: "Check for Updates…", action: #selector(Updates.checkForUpdates(_:)), keyEquivalent: "")
         updateItem.target = updates
         menu.addItem(updateItem)
+        menu.addItem(withTitle: "About Sleepy Paws", action: #selector(showAbout), keyEquivalent: "")
         menu.addItem(withTitle: "Quit", action: #selector(askToQuit), keyEquivalent: "")
         menu.items.filter { $0.action != nil && $0.target == nil }.forEach { $0.target = self }
         // Installing an update quits and relaunches the app, which a PIN-less quit can't do.
