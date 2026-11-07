@@ -110,7 +110,7 @@ struct BreakView: View {
         }
         .padding(22)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.black.opacity(0.55).ignoresSafeArea())
+        .background(Color.black.opacity(0.4).ignoresSafeArea())
     }
 
     private func check() {

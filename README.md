@@ -59,6 +59,9 @@ grown-up says otherwise. No lectures, just a yawning puppy.
 2. Create a parent PIN. The timer starts with a 1-hour daily limit.
 3. Change the limit any time in **Settings…** from the menu bar. Saving starts
    today's countdown over from the new limit.
+4. In Settings, click **Allow…** next to **Block shortcuts** and turn Sleepy
+   Paws on in Privacy & Security → Accessibility, so no shortcut works on the
+   break screen.
 
 The first time a parent enters the PIN while a music or video app is running,
 macOS asks whether Sleepy Paws may control it. Click **Allow**, so it can pause
@@ -112,6 +115,7 @@ appcast, tags the version and publishes a GitHub release with both files.
 | Restarting or shutting down | It opens at login and continues from the saved progress. |
 | Deleting or editing its saved state | A second copy is kept; the stricter one wins. |
 | Cmd-Tab, Force Quit, the Dock | Disabled while the break screen is up. |
+| Spotlight, Mission Control, other shortcuts | With **Block shortcuts** on (Accessibility permission, from Settings), every key but the PIN's is swallowed. |
 | Turning the volume back up | Muted again within a quarter of a second. |
 | Leaving a game or video running underneath | Every app is frozen until the break ends, apps opened later too. |
 | Guessing the PIN | Five tries, then a 30-second wait. The PIN is stored as a salted PBKDF2 hash. |

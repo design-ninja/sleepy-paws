@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import SleepyPawsCore
 
@@ -25,6 +26,9 @@ struct SetupView: View {
     @State private var hoursText = ""
     @State private var minutesText = ""
     @State private var changingPIN = false
+    @State private var shortcutsBlocked = KeyboardLock.isTrusted
+    /// Notices the Accessibility switch being turned on in System Settings.
+    private let permissionCheck = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var pinChanged = false
     @State private var error: String?
 
@@ -58,13 +62,27 @@ struct SetupView: View {
                         Text("Parent PIN")
                         Text(pinChanged ? "Changed" : "Needed to add time, pause or open Settings")
                     }
+                    LabeledContent {
+                        if shortcutsBlocked {
+                            Label("On", systemImage: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        } else {
+                            Button("Allow…") { KeyboardLock.requestPermission() }
+                        }
+                    } label: {
+                        Text("Block shortcuts")
+                        Text(shortcutsBlocked
+                             ? "Cmd-Tab, Spotlight and other keys do nothing on the break screen"
+                             : "Turn on Sleepy Paws in Privacy & Security → Accessibility")
+                    }
                 } footer: {
                     footer
                 }
             }
             .formStyle(.grouped)
             .scrollDisabled(true)
-            .frame(width: 460, height: 384)
+            .frame(width: 460, height: 440)
+            .onReceive(permissionCheck) { _ in shortcutsBlocked = KeyboardLock.isTrusted }
             .onAppear(perform: fillLimit)
             .sheet(isPresented: $changingPIN) { sheet }
         } else {

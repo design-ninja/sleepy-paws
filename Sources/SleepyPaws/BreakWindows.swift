@@ -32,7 +32,10 @@ final class BreakWindows {
     private var content: (options: [Int], initial: Int, verify: (String) -> String?, unlock: (BreakAction) -> String?)?
     var rememberExtra: (Int) -> Void = { _ in }
     /// While the system password dialog is up, don't pull the keyboard away from it.
-    var isAuthorizing = false
+    var isAuthorizing = false {
+        didSet { keyboard.suspended = isAuthorizing }
+    }
+    private let keyboard = KeyboardLock()
     var forgotPIN: (@escaping @MainActor (Bool) -> Void) -> Void = { _ in }
     private var activationObserver: NSObjectProtocol?
     var isShowing: Bool { content != nil }
@@ -53,6 +56,10 @@ final class BreakWindows {
             }
         }
         if previousPresentation == nil {
+            // Presentation options only take effect for a regular app, so the menu bar app
+            // becomes one while the cover is up.
+            NSApp.setActivationPolicy(.regular)
+            keyboard.start()
             // Shown again while the last cover is still fading out: keep the original options.
             previousPresentation = pendingRestore ?? NSApp.presentationOptions
             pendingRestore = nil
@@ -146,6 +153,7 @@ final class BreakWindows {
         guard let previousPresentation else { return }
         content = nil
         self.previousPresentation = nil
+        keyboard.stop()
         if let activationObserver { NSWorkspace.shared.notificationCenter.removeObserver(activationObserver) }
         activationObserver = nil
         let closing = windows
@@ -157,6 +165,7 @@ final class BreakWindows {
             guard let self, !self.isShowing, let restore = self.pendingRestore else { return }
             self.pendingRestore = nil
             NSApp.presentationOptions = restore
+            NSApp.setActivationPolicy(.accessory)
         }
     }
 

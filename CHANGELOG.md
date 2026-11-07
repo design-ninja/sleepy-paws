@@ -8,6 +8,18 @@ All notable changes to Sleepy Paws are listed here. The format follows
 
 ### Added
 
+- Block shortcuts: with the Accessibility permission (Settings → Block
+  shortcuts → Allow…), the break screen swallows every key except the PIN
+  digits, Delete, Return and Tab, so Cmd-Tab, Spotlight, Mission Control,
+  function and media keys do nothing.
+
+### Changed
+
+- The app becomes a regular app while the break screen is up, so macOS applies
+  its no-switching options; the overlay is a little more see-through.
+
+### Added (freezing)
+
 - Apps behind the break screen are frozen (SIGSTOP) and carry on where they
   were when it ends; apps opened during the break are frozen too. Every launch
   thaws anything left frozen by a crash.
